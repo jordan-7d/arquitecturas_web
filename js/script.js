@@ -3,15 +3,8 @@ document.addEventListener("DOMContentLoaded", () => {
   const currentYear = document.getElementById("currentYear");
   if (currentYear) currentYear.textContent = String(new Date().getFullYear());
 
-  // Reproductor local: el objeto URL anterior se libera al cambiar o restablecer.
-  const videoInput = document.getElementById("videoFile");
-  const selectVideoButton = document.getElementById("selectVideoButton");
-  const resetVideoButton = document.getElementById("resetVideoButton");
   const localVideo = document.getElementById("localVideo");
-  const videoPlaceholder = document.getElementById("videoPlaceholder");
-  const videoFileName = document.getElementById("videoFileName");
   const videoMessage = document.getElementById("videoMessage");
-  let videoObjectUrl = null;
 
   document.querySelectorAll("#mainNavigation .nav-link").forEach((link) => {
     link.addEventListener("click", () => {
@@ -22,52 +15,9 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   });
 
-  const clearVideo = () => {
-    localVideo.removeAttribute("src");
-    localVideo.load();
-    if (videoObjectUrl) URL.revokeObjectURL(videoObjectUrl);
-    videoObjectUrl = null;
-    videoInput.value = "";
-    videoFileName.textContent = "Ningún archivo seleccionado";
-    videoPlaceholder.hidden = false;
-    resetVideoButton.disabled = true;
-  };
-
-  selectVideoButton.addEventListener("click", () => videoInput.click());
-  videoInput.addEventListener("change", () => {
-    const file = videoInput.files && videoInput.files[0];
-    if (!file) return;
-
-    const extension = file.name.split(".").pop().toLowerCase();
-    const supportedType = ["video/mp4", "video/webm"].includes(file.type);
-    const supportedExtension = ["mp4", "webm"].includes(extension);
-    if (!supportedType && !supportedExtension) {
-      videoMessage.textContent = "Formato no compatible. Selecciona un archivo de video MP4 o WebM.";
-      videoInput.value = "";
-      return;
-    }
-    if (file.type && !supportedType) {
-      videoMessage.textContent = "El tipo de archivo no coincide con MP4 o WebM. Selecciona un video compatible.";
-      videoInput.value = "";
-      return;
-    }
-
-    if (videoObjectUrl) URL.revokeObjectURL(videoObjectUrl);
-    videoObjectUrl = URL.createObjectURL(file);
-    localVideo.src = videoObjectUrl;
-    localVideo.load();
-    videoFileName.textContent = file.name;
-    videoPlaceholder.hidden = true;
-    resetVideoButton.disabled = false;
-    videoMessage.textContent = "Video cargado localmente. El archivo no se ha enviado a ningún servidor.";
-  });
-  resetVideoButton.addEventListener("click", () => {
-    clearVideo();
-    videoMessage.textContent = "Reproductor restablecido. Selecciona un video para comenzar.";
-  });
   localVideo.addEventListener("error", () => {
     if (!localVideo.currentSrc) return;
-    videoMessage.textContent = "No se pudo reproducir este archivo. Comprueba que esté codificado en un formato compatible con tu navegador.";
+    videoMessage.textContent = "No se pudo reproducir el video. Comprueba que el archivo esté disponible y use un códec compatible con tu navegador.";
   });
 
   // Preguntas y explicaciones visibles solo después de finalizar.
